@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Browser</title>
+<link href="{{ url_for('static', path='/saddaudience.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+<form action="/" method="get">
+    <div class="Back">
+        <button class="btn btn-primary btn-lg btn-block">
+            <i class="fa fa-home"></i>
+        </button>
+        <i class="bi bi-house"></i>
+    </div>
+</form>
+
+<div class="post">
+
+    <div class="frame">
+        <select class="form-select select-frame" id="select_frame_id">
+
+        </select>
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">№</span>
+        </div>
+
+        <input name="numberAudience" id="numberAudience" class="form-control"
+               placeholder="Номер аудитории" aria-label="Номер аудитории"
+        >
+    </div>
+
+    <div class="flex-item">
+        <button onclick="send()" class="btn btn-primary btn-lg btn-block">
+            Добавить
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    async function get_select() {
+        const get_groups = await fetch("/getdata/frame", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_groups.ok) return console.log(get_groups);
+        const data = get_groups.json();
+        data.then(response => {
+            const frames = response;
+            console.log(frames);
+            for (const frame of frames) {
+                let newOption = new Option(frame, frames);
+                select_frame_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function send() {
+        const frame_name = document.getElementById("select_frame_id").value;
+        const audience_number = document.getElementById("numberAudience").value;
+
+        const get_frame_id = await fetch("/getdata/frame/" + frame_name, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+
+        if (audience_number === "") {
+            return console.log("Не введен номер аудитории");
+        }
+
+        const response = await fetch("/postdata/audience", {
+                method: "POST",
+                headers: {"Accept": "application/json", "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    audience: audience_number,
+                    frame_id: get_frame_id
+                })
+            }
+        );
+
+        if (!response.ok) return console.log(response);
+
+        const data2 = await response.json();
+        console.log(data2);
+        alert("Аудитория добавлена!");
+    }
+
+    get_select();
+
+</script>
+
+{% endblock %}

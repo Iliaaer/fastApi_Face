@@ -1,0 +1,25 @@
+.post {
+    display: flex;
+    vertical-align: middle;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    margin-top: 15%;
+}
+
+.flex-item {
+    flex-basis: auto;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-sizing: content-box;
+}
+
+.input-group {
+    width: 250px;
+}

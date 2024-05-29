@@ -1,0 +1,74 @@
+.post {
+    display: flex;
+    vertical-align: middle;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    margin-top: 15%;
+}
+
+.frame {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+}
+
+.select-frame {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    width: 350px;
+    margin-right: 35px;
+    text-align: center;
+    margin-left: 5px;
+}
+
+
+.select-audience {
+    display: flex;
+    width: 220px;
+    text-align: center;
+    margin-top: 3%;
+    margin-right: 60px;
+}
+
+.select-group {
+    display: flex;
+    width: 220px;
+    text-align: center;
+    margin-top: 3%;
+}
+
+.select_two_group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    box-sizing: content-box;
+    overflow: auto;
+}
+
+.flex-item {
+    flex-basis: auto;
+    margin: 1% 10px 200px;
+    box-sizing: content-box;
+}
+
+
+.input-group-prepend {
+    width: 150px;
+}
+
+.input-group {
+    width: 500px
+}
+
+.there-input {
+    margin-top: 1%;
+    flex-direction: row;
+    overflow: auto;
+}

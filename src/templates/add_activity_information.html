@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Browser</title>
+<link href="{{ url_for('static', path='/ssadd_activity_information.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+<form action="/" method="get">
+    <div class="Back">
+        <button class="btn btn-primary btn-lg btn-block">
+            <i class="fa fa-home"></i>
+        </button>
+        <i class="bi bi-house"></i>
+    </div>
+</form>
+
+<div class="post">
+
+    <div class="frame" id="frame_id">
+        <select class="form-select select-frame" id="select_frame_id">
+
+        </select>
+
+        <button onclick="get_select_audience()" class="btn btn-primary btn-lg btn-block">
+            Показать
+        </button>
+    </div>
+
+    <div class="select_two_group">
+        <div class="audience" id="audience_id">
+            <select class="form-select select-audience" id="select_audience_id">
+
+            </select>
+        </div>
+
+        <div class="group" id="group_id">
+            <select class="form-select select-group" id="select_group_id">
+
+            </select>
+        </div>
+    </div>
+
+    <div class="there-input" id="there-input">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Название</span>
+            </div>
+            <input name="input-name" id="input-name" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Дата занятия</span>
+            </div>
+            <input type="date" name="input-date" id="input-date" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Время занятия</span>
+            </div>
+            <input type="time" name="input-time" id="input-time" class="form-control">
+        </div>
+    </div>
+
+
+    <div class="flex-item" id="flex-item_id">
+        <button onclick="send()" class="btn btn-primary btn-lg btn-block">
+            Добавить
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+    async function get_select_frame() {
+        let obj = document.getElementById("audience_id");
+        obj.style.display = "none";
+        obj = document.getElementById("group_id");
+        obj.style.display = "none";
+        obj = document.getElementById("flex-item_id");
+        obj.style.display = "none";
+        obj = document.getElementById("there-input")
+        obj.style.display = "none";
+
+        const get_frames = await fetch("/getdata/frame", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_frames.ok) return console.log(get_frames);
+        const data = get_frames.json();
+        data.then(response => {
+            const frames = response;
+            console.log(frames);
+            for (const frame of frames) {
+                let newOption = new Option(frame, frame);
+                select_frame_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function get_select_group() {
+        const get_groups = await fetch("/getdata/getgroups", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_groups.ok) return console.log(get_groups);
+        const data = get_groups.json();
+        data.then(response => {
+            const groups = response;
+            console.log(groups);
+            for (const group of groups) {
+                let newOption = new Option(group, group);
+                select_group_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function get_select_audience() {
+        let obj = document.getElementById("select_frame_id");
+        const get_frame_id = await fetch("/getdata/frame/" + obj.value, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+        }).then((res) => res.json());
+        console.log(get_frame_id);
+
+        const get_audiences = await fetch("/getdata/audience/" + get_frame_id, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_audiences.ok) return console.log(get_audiences);
+        const data = get_audiences.json();
+        data.then(response => {
+            const audiences = response;
+            console.log(audiences);
+            for (const audience of audiences) {
+                let newOption = new Option(audience, audience);
+                select_audience_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+
+        let obj_audience = document.getElementById("audience_id");
+        let obj_group = document.getElementById("group_id");
+        let obj_flex = document.getElementById("flex-item_id");
+        let obg_there = document.getElementById("there-input")
+        obj_audience.style.display = "flex";
+        obj_group.style.display = "flex";
+        obj_flex.style.display = "flex";
+        obg_there.style.display = "block";
+    }
+
+    async function send() {
+        const name = document.getElementById("input-name").value;
+        const date = document.getElementById("input-date").value;
+        const time = document.getElementById("input-time").value;
+        const frame = document.getElementById("select_frame_id").value;
+        const group = document.getElementById("select_group_id").value;
+        const audience = document.getElementById("select_audience_id").value;
+
+        const frame_id = await fetch("/getdata/frame/" + frame, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+
+        const audience_id = await fetch("/getdata/audience/" + frame_id + '/' + audience, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+
+        const get_response = await fetch("/getdata/getgroupsid", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+        const group_id = get_response[group];
+
+        console.log("name", name);
+        console.log("date", date);
+        console.log("time", time);
+        console.log("frame", frame, frame_id);
+        console.log("audience", audience, audience_id);
+        console.log("group", group, group_id);
+
+        const response = await fetch("/postdata/discipline", {
+                method: "POST",
+                headers: {"Accept": "application/json", "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: name,
+                    audience_id: audience_id,
+                    group_id: group_id,
+                    time: time + ":00",
+                    data: date
+                })
+            }
+        );
+
+        if (!response.ok) return console.log(response);
+
+        const data2 = await response.json();
+        console.log(data2);
+        alert("Дисциплина добавлена!");
+
+    }
+
+    get_select_group();
+    get_select_frame();
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+.post {
+    display: flex;
+    vertical-align: middle;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    margin-top: 12%;
+}
+
+.flex-item {
+    flex-basis: auto;
+    margin-bottom: 200px;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-sizing: content-box;
+}
+
+.btn {
+    margin-top: 10px;
+}
+
+
+.form-select {
+    margin-top: 15px;
+    width: 400px;
+}
+
+.input-group-prepend {
+    width: 100px;
+}
+
+.input-group {
+    width: 400px
+}

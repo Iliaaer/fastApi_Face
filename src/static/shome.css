@@ -1,0 +1,67 @@
+body {
+
+}
+
+.flex-item {
+    flex-basis: auto;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-sizing: content-box;
+}
+
+button {
+    width: 240px;
+    height: 105px;
+}
+
+.flex-container {
+    display: flex;
+    vertical-align: middle;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    margin-top: 10%;
+}
+
+
+.flex-item1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2%;
+
+}
+
+.flex-item2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1%;
+}
+
+.flex-item3 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1%;
+}
+
+.flex-item-attendance {
+    flex-basis: auto;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-sizing: content-box;
+}
+
+.attendance {
+    width: 240px;
+    height: 110px;
+}

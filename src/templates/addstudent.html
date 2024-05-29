@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Browser</title>
+<link href="{{ url_for('static', path='/s_add_student.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+<form action="/" method="get">
+    <div class="Back">
+        <button class="btn btn-primary btn-lg btn-block">
+            <i class="fa fa-home"></i>
+        </button>
+        <i class="bi bi-house"></i>
+    </div>
+</form>
+
+<div class="post">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Фамилия</span>
+        </div>
+        <input name="addlastname" id="addlastname" class="form-control">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Имя</span>
+        </div>
+        <input name="addname" id="addname" class="form-control">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Отчество</span>
+        </div>
+        <input name="addmiddlename" id="addmiddlename" class="form-control">
+    </div>
+
+    <select class="form-select" aria-label="Default select example" id="select_id">
+
+    </select>
+
+    <div class="flex-item">
+        <button onclick="send()" class="btn btn-primary btn-lg btn-block">
+            Добавить
+        </button>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    async function get_select() {
+
+        const get_groups = await fetch("/getdata/getgroups", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_groups.ok) return console.log(get_groups);
+        const data = get_groups.json();
+        // console.log(get_groups);
+        // console.log(data);
+        data.then(response => {
+            const groups = response;
+            console.log(groups);
+            for (const group of groups) {
+                // console.log(group);
+                let newOption = new Option(group, group);
+                select_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function send() {
+        const last_name = document.getElementById("addlastname").value;
+        const name = document.getElementById("addname").value;
+        const middle_name = document.getElementById("addmiddlename").value;
+        const group = document.getElementById("select_id").value;
+
+        // console.log(last_name);
+        // console.log(name);
+        // console.log(middle_name);
+        // console.log(group);
+
+        if (last_name === undefined && name === undefined) return alert("Введите фамилию и имя!");
+        if (last_name === undefined) return alert("Введите фамилию!");
+        if (name === undefined) return alert("Введите имя!");
+
+        const get_response = await fetch("/getdata/getgroupsid", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+        const group_id = get_response[group];
+
+        const response = await fetch("/postdata/addstudent", {
+                method: "POST",
+                headers: {"Accept": "application/json", "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: name,
+                    last_name: last_name,
+                    middle_name: middle_name,
+                    group_id: group_id,
+
+                })
+            }
+        );
+
+        if (!response.ok) return console.log(response);
+
+        const data2 = await response.json();
+        console.log(data2);
+        alert("Студент добавлен!");
+    }
+
+    get_select();
+</script>
+
+{% endblock %}

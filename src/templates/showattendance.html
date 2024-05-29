@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Browser</title>
+<link href="{{ url_for('static', path='/ss_showattendance.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+<form action="/" method="get">
+    <div class="Back">
+        <button class="btn btn-primary btn-lg btn-block">
+            <i class="fa fa-home"></i>
+        </button>
+        <i class="bi bi-house"></i>
+    </div>
+</form>
+
+<div class="post">
+
+    <div class="group">
+        <select class="form-select select-group" aria-label="Default select example" id="select_group_id">
+
+        </select>
+
+        <button onclick="get_discipline()" class="btn btn-primary btn-lg btn-block">
+            Применить
+        </button>
+
+    </div>
+
+    <div class="discipline" id="discipline_id">
+        <select class="form-select select-discipline" aria-label="Default select example" id="select_discipline_id">
+
+        </select>
+
+        <button onclick="get_attendance()" class="btn btn-primary btn-lg btn-block">
+            Показать
+        </button>
+
+    </div>
+
+</div>
+
+<table class="table table-bordered justify-content-center" id="myTable">
+
+</table>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    async function get_select() {
+        let obj = document.getElementById("discipline_id");
+        obj.style.display = "none";
+
+        const get_groups = await fetch("/getdata/getgroups", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_groups.ok) return console.log(get_groups);
+        const data = get_groups.json();
+        data.then(response => {
+            const groups = response;
+            console.log(groups);
+            for (const group of groups) {
+                let newOption = new Option(group, group);
+                select_group_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function get_discipline() {
+        let obj = document.getElementById("discipline_id");
+        const group = document.getElementById("select_group_id").value;
+        let table = document.getElementById('myTable');
+        table.innerHTML = '';
+        table.style.display = "none";
+
+        const get_groups = await fetch("/getdata/getgroupsid", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+        const group_id = get_groups[group];
+
+        const get_discipline = await fetch("/getdata/discipline/" + group_id, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+        if (!get_discipline.ok) return console.log(get_discipline);
+
+        const data = get_discipline.json();
+        console.log(data);
+
+        data.then(response => {
+            const disciplines = response;
+            console.log(disciplines);
+
+            if (disciplines.length === 0) {
+                obj.style.display = "none";
+                return console.log("У группы нет дисциплин");
+            }
+            select_discipline_id.options.length = 0;
+            for (const discipline of disciplines) {
+                let newOption = new Option(discipline, discipline);
+                select_discipline_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+        obj.style.display = "flex";
+
+    }
+
+    function countDates(arr) {
+        let dateCount = {};
+        arr.forEach(date_time => {
+            const date = date_time[1];
+            if (date in dateCount) {
+                dateCount[date]++;
+            } else {
+                dateCount[date] = 1;
+            }
+        });
+
+        return dateCount;
+    }
+
+    async function get_attendance() {
+        const group = document.getElementById("select_group_id").value;
+        const discipline = document.getElementById("select_discipline_id").value;
+
+        const get_groups = await fetch("/getdata/getgroupsid", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+        const group_id = get_groups[group];
+
+        const get_students = await fetch("/getdata/students/" + group_id, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+        }).then((res) => res.json());
+
+        const get_discipline_info = await fetch("/getdata/discipline/" + group_id + "/" + discipline, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+        }).then((res) => res.json());
+
+
+        console.log(group_id);
+        console.log(get_students);
+        console.log(discipline);
+
+        console.log(get_discipline_info);
+
+        let table = document.getElementById('myTable');
+        table.innerHTML = '';
+
+
+        let thead = document.createElement('thead');
+        let tr_head = document.createElement('tr');
+
+        let td_number = document.createElement('td');
+        let td_name = document.createElement('td');
+
+        td_number.rowSpan = 2;
+        td_name.rowSpan = 2;
+        td_number.innerText = "#";
+        td_name.innerText = "ФИО";
+
+        tr_head.appendChild(td_number);
+        tr_head.appendChild(td_name);
+
+        const date_count = countDates(get_discipline_info);
+        for (const data in date_count) {
+            let td_date = document.createElement('td');
+            let date = data.split('-');
+            const day = date[2];
+            const month = date[1];
+            td_date.colSpan = date_count[data];
+            td_date.innerText = day + "." + month;
+            tr_head.appendChild(td_date);
+        }
+
+        thead.appendChild(tr_head);
+        let tr_head2 = document.createElement('tr');
+
+
+        for (const data of get_discipline_info) {
+            let td_time = document.createElement('td');
+            td_time.innerText = data[2].slice(0, -3);
+            tr_head2.appendChild(td_time);
+        }
+
+        thead.appendChild(tr_head2);
+        table.appendChild(thead);
+
+        let tbody = document.createElement('tbody');
+
+        for (const i in get_students) {
+            let tr_body = document.createElement('tr');
+
+            let td_student_number = document.createElement('td');
+            td_student_number.innerText = String(Number(i) + 1);
+            tr_body.appendChild(td_student_number);
+
+            let td_student_name = document.createElement('td');
+            td_student_name.innerText = get_students[i].join(' ');
+            td_student_name.style.textAlign = "left";
+            tr_body.appendChild(td_student_name);
+
+            const get_student_id = await fetch("/getdata/students/" + get_students[i].join('/'), {
+                method: "GET",
+                headers: {"Accept": "application/json", "Content-Type": "application/json"},
+            }).then((res) => res.json());
+
+            for (const data of get_discipline_info) {
+                let td_attendance_time = document.createElement('td');
+
+                const get_attendance = await fetch("/getdata/attendance/" + get_student_id + "/" + data[0], {
+                    method: "GET",
+                    headers: {"Accept": "application/json", "Content-Type": "application/json"},
+                }).then((res) => res.json());
+
+                console.log(get_student_id, data, get_attendance, get_attendance.length);
+                if (get_attendance.length === 0) {
+                    td_attendance_time.innerText = "Н";
+                    td_attendance_time.style.background = "red";
+                } else {
+                    const h = Math.floor(get_attendance / 3600);
+                    const m = Math.floor((get_attendance % 3600) / 60);
+                    const time = h * 60 + m;
+                    if (time !== 0) {
+                        td_attendance_time.innerText = String(time);
+                        td_attendance_time.style.background = "yellow";
+                    }
+
+
+                }
+                tr_body.appendChild(td_attendance_time);
+            }
+
+            tbody.appendChild(tr_body);
+        }
+        table.appendChild(tbody);
+
+        table.style.display = "table";
+
+    }
+
+    get_select();
+</script>
+
+{% endblock %}

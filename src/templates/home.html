@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link href="{{ url_for('static', path='/shome.css') }}" rel="stylesheet">
+<title>Browser</title>
+{% endblock %}
+
+{% block body %}
+<div class="flex-container">
+
+    <div class="flex-item1">
+        <form action="creategroup" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Создать учебную группу
+                </button>
+            </div>
+        </form>
+
+        <form action="addstudent" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Добавить студента в учебную группу
+                </button>
+            </div>
+        </form>
+
+        <form action="showgroup" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Просмотреть состав учебной группы
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <div class="flex-item2">
+        <form action="addaudience" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Добавить новую аудиторию
+                </button>
+            </div>
+        </form>
+
+        <form action="add_activity_information" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Добавить информацию о занятии
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="flex-item3">
+        <form action="showattendance" method="get">
+            <div class="flex-item">
+                <button type="submit" class="btn btn-primary btn-lg btn-block attendance">
+                    Просмотреть посещаемость учебной группы
+                </button>
+            </div>
+        </form>
+
+
+        <!--        <form action="showvideo" method="get">-->
+        <!--            <div class="flex-item">-->
+        <!--                <button type="submit" class="btn btn-primary btn-lg btn-block">-->
+        <!--                    Посмотреть видео с камер-->
+        <!--                </button>-->
+        <!--            </div>-->
+        <!--        </form>-->
+    </div>
+</div>
+{% endblock %}

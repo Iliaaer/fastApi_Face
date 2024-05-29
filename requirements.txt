@@ -1,0 +1,10 @@
+fastapi[all]~=0.110.0
+sqlalchemy[asyncio]
+pandas
+alembic~=1.13.1
+psycopg2
+asyncpg
+
+pydantic~=2.6.4
+uvicorn~=0.29.0
+python-dotenv~=1.0.1

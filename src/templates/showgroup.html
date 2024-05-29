@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Browser</title>
+<link href="{{ url_for('static', path='/ss_showgroup.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+<form action="/" method="get">
+    <div class="Back">
+        <button class="btn btn-primary btn-lg btn-block">
+            <i class="fa fa-home"></i>
+        </button>
+        <i class="bi bi-house"></i>
+    </div>
+</form>
+<div class="post">
+    <select class="form-select" aria-label="Default select example" id="select_id">
+    </select>
+    <button onclick="show()" class="btn btn-primary btn-lg btn-block">
+        Посмотреть
+    </button>
+</div>
+
+<table class="table table-bordered" id="myTable">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Фамилия</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Отчество</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    async function get_select() {
+        const get_groups = await fetch("/getdata/getgroups", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        });
+
+        if (!get_groups.ok) return console.log(get_groups);
+        const data = get_groups.json();
+        data.then(response => {
+            const groups = response;
+            console.log(groups);
+            for (const group of groups) {
+                let newOption = new Option(group, group);
+                select_id.append(newOption);
+                newOption.selected = true;
+            }
+        });
+    }
+
+    async function show() {
+        const group = document.getElementById("select_id").value;
+        let table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+        document.getElementById('myTable').style.display = "none";
+
+        const get_response_id = await fetch("/getdata/getgroupsid", {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"}
+        }).then((res) => res.json());
+        const group_id = get_response_id[group];
+
+        const get_response = await fetch("/getdata/students/" + group_id, {
+            method: "GET",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+        }).then((res) => res.json());
+        // console.log(get_response);
+        table.innerHTML = '';
+
+        if (get_response.length === 0) return console.log("В группе никого нет");
+
+        // console.log("Количетсво: ", table.rows.length);
+        for (const i in get_response) {
+            const student = get_response[i];
+            table.insertRow(-1);
+            table.rows[i].insertCell(0);
+            table.rows[i].cells[0].innerHTML = String(Number(i) + 1);
+            for (const c in student) {
+                table.rows[i].insertCell(Number(c) + 1);
+                table.rows[i].cells[Number(c) + 1].innerHTML = student[c];
+            }
+            // console.log(student[0], student[1], student[2]);
+        }
+        document.getElementById('myTable').style.display = "table";
+
+    }
+
+    get_select();
+</script>
+
+{% endblock %}
