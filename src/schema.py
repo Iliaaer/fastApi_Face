@@ -29,3 +29,9 @@ class Discipline(BaseModel):
     group_id: int
     time: datetime.time
     data: datetime.date
+
+
+class Attendance(BaseModel):
+    student_id: int
+    discipline_id: int
+    time: datetime.time
